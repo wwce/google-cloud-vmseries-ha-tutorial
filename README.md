@@ -116,7 +116,7 @@ We can now test the deployment by accessing the `workload-vm` that resides in th
     <img src="images/image2.png" width="350">
 
 6. Perform a user initiated failover.
-   1. On the ***active firewall***, go to the **Device → High Availability → Operational Commands**.
+   1. On the ***Active Firewall***, go to the **Device → High Availability → Operational Commands**.
    2. Click **Suspend local device for high availability**.
         <img src="images/image3.png" width="630">
    3. When prompted, click **OK** to initiate the failover.
