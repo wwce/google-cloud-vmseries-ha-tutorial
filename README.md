@@ -36,19 +36,16 @@ This deployment model provides solutions for the following key use-cases:
     ```
 
 3. Edit the `terraform.tfvars` file and set values for the following variables:
-    * Set  `project_id`  to your Google Cloud project. 
-    * Set  `public_key_path` to match the full path of the public key you created previously.  
-    * Set `mgmt_allow_ips` to a list of IPv4 addresses that you want to be able to access the VM-Series management interface. 
-    * (Optional) Set `prefix` to any string.  This string will be prepended to the created resources.
-    * (Optional) Set `create_workload_vm` to `false` if you do not want to deploy a VM for testing purposes.
-    * (Optional) The  `vmseries_image_name` defines the VM-Series machine image to deploy.   The image contains the PAN-OS version and license type. 
-    * (Optional) The `cidr_*` variables represent the subnet ranges created in the VPC networks.  These values can be changed to suit your test environment. 
 
-4. (Optional) If you are using BYOL image (i.e. `vmseries-flex-byol-*`), the license can be applied during deployment or after deployment.  To bootstrap the license during deployment:
-    1. [Contact](https://www.paloaltonetworks.com/company/contact-sales) your Palo Alto Networks sales representative to receive the licenses.
-    2. [Create a Support Account](https://docs.paloaltonetworks.com/vm-series/10-2/vm-series-deployment/license-the-vm-series-firewall/create-a-support-account#id4032767e-a4a8-4f5a-9df2-48f5d63780ba) and [create a deployment profile](https://docs.paloaltonetworks.com/vm-series/10-2/vm-series-deployment/license-the-vm-series-firewall/software-ngfw/create-a-deployment-profile-vm-series). 
-    3. Add the **VM-Series Auth-Code** to `bootstrap_files/authcodes`. 
+    | Variable      | Description                                    |
+    |-----------------|----------------------------------------------------------------------------------|
+    | `project_id `     | Set to your Google Cloud deployment project.                                     |
+    | `public_key_path` | Set to match the full path you created previously.                               |
+    | `mgmt_allow_ips`  | Set to a list of IPv4 ranges that can access the VM-Series management interface. |
+    | `prefix`          | (Optional) If set, this string will be prepended to the created resources.       |
+    | `vmseries_image_name`          | (Optional) Defines the VM-Series image to deploy.  A full list of images can be found [here](https://docs.paloaltonetworks.com/vm-series/11-0/vm-series-deployment/set-up-the-vm-series-firewall-on-google-cloud-platform/deploy-vm-series-on-gcp/use-custom-templates-or-the-gcloud-cli-to-deploy-the-vm-series-firewall).       |
 
+4. (Optional) If you are using BYOL image (i.e. `vmseries-flex-byol-*`), the license can be applied during deployment by adding your VM-Series authcode to `bootstrap_files/authcodes`.
 5. Save your `terraform.tfvars` file.
 
 
