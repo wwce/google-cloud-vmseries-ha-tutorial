@@ -119,7 +119,7 @@ We can now test the deployment by accessing the `workload-vm` that resides in th
    1. On the ***Active Firewall***, go to the **Device → High Availability → Operational Commands**.
    2. Click **Suspend local device for high availability**.
         <img src="images/image3.png" width="630">
-   3. When prompted, click **OK** to initiate the failover.
+   3. When prompted, click **OK** to initiate the failover.</br>
         <img src="images/image4.png" width="350">
 
 7. You should notice your SSH session to the `workload-vm` is still active.  This indicates the session successfully failed over between the VM-Series firewalls.  The script output should also display the same source IP address.
