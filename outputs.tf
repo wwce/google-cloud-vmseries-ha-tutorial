@@ -1,9 +1,9 @@
 output "EXTERNAL_LB_SSH" {
-  value = "https://${google_compute_address.external_nat_ip.address}"
+  value = "ssh paloalto@${google_compute_address.external_nat_ip.address} -i ${trim(var.public_key_path, ".pub")}"
 }
 
 output "EXTERNAL_LB_URL" {
-  value = "https://${google_compute_address.external_nat_ip.address}"
+  value = "http://${google_compute_address.external_nat_ip.address}"
 }
 
 output "VMSERIES_ACTIVE" {

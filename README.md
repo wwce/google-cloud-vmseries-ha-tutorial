@@ -62,32 +62,33 @@ When no further changes are necessary in the configuration, deploy the resources
     terraform apply
     ```
 
-2. After all the resources are created, Terraform displays the following message:
+2. Enter `yes` to start the deployment.
+   
+3. After all the resources are created, Terraform displays the following message:
 
     ```
     Apply complete!
 
     Outputs:
 
-    EXTERNAL_LB_SSH    = "ssh paloalto@1.1.1.1 -i ~/.ssh/vmseries-tutorial"
+    EXTERNAL_LB_IP    = "ssh paloalto@1.1.1.1 -i ~/.ssh/vmseries-tutorial"
     EXTERNAL_LB_URL    = "https://1.1.1.1"
     VMSERIES_ACTIVE    = "https://2.2.2.2"
     VMSERIES_PASSIVE   = "https://3.3.3.3"
     ```
 
-    The output displays the MGMT URL for each VM-Series firewall.  The `EXTERNAL_LB_IP` output displays the IP address of the external load balancer’s forwarding rule. 
-
-
 ## Test the deployment
 
 We can now test the deployment by accessing the `workload-vm` that resides in the trust VPC network.  All of the `workload-vm` traffic is routed directly through the VM-Series HA pair. 
 
-1. Use the `EXTERNAL_LB_SSH` output to open an SSH session through the VM-Series to the `workload-vm`.  
-   ```
-   ssh paloalto@1.1.1.1 -i ~/.ssh/vmseries-tutorial
-   ```
+1. Verify the deployment is ready. Use the output `EXTERNAL_LB_URL` to access the web service on the `workload-vm` through the VM-Series firewall.
 
-2. A script has been preloaded to the workload VM.  Run the script to test the failover mechanism across the VM-Series firewalls.
+    <img src="images/image0.png" width="600">
+
+2. Use the output `EXTERNAL_LB_SSH`  to open an SSH session through the VM-Series to the `workload-vm`.  
+
+
+3. A script has been preloaded to the workload VM.  Run the script to test the failover mechanism across the VM-Series firewalls.
     ```
     /network-check.sh
     ```
@@ -100,28 +101,28 @@ We can now test the deployment by accessing the `workload-vm` that resides in th
     Wed Mar 12 16:40:21 UTC 2023 -- Online -- Source IP = x.x.x.x
     ```
 
-3. Login to the VM-Series firewalls using the `VMSERIES_ACTIVE` and `VMSERIES_PASSIVE` output values.
+4. Login to the VM-Series firewalls using the `VMSERIES_ACTIVE` and `VMSERIES_PASSIVE` output values.
     ```
     UN: admin
     PW: Pal0Alt0@123 
     ```
 
-4. After login, take note of the HA Status in the bottom right corner on each firewall.
+5. After login, take note of the HA Status in the bottom right corner on each firewall.
 
     **Active Firewall**
-    ![img.png](images/img_0.png)
+    <img src="images/image1.png" width="350">
 
     **Passive Firewall**
-    ![img_1.png](images/img_1.png)
+    <img src="images/image2.png" width="350">
 
-5. Perform a user initiated failover.
+6. Perform a user initiated failover.
    1. On the ***active firewall***, go to the **Device → High Availability → Operational Commands**.
    2. Click **Suspend local device for high availability**.
-    ![img_2.png](images/img_2.png)
+        <img src="images/image3.png" width="630">
    3. When prompted, click **OK** to initiate the failover.
-      ![img_3.png](images/img_3.png)
+        <img src="images/image4.png" width="350">
 
-6. You should notice your SSH session to the `workload-vm` is still active.  This indicates the session successfully failed over between the VM-Series firewalls.  The script output should also display the same source IP address.
+7. You should notice your SSH session to the `workload-vm` is still active.  This indicates the session successfully failed over between the VM-Series firewalls.  The script output should also display the same source IP address.
     ```
     Wed Mar 12 16:47:18 UTC 2023 -- Online -- Source IP = x.x.x.x
     Wed Mar 12 16:47:19 UTC 2023 -- Online -- Source IP = x.x.x.x
