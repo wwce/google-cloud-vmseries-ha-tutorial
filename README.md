@@ -2,7 +2,7 @@
 
 ## Overview
 
-This deployment creates a pair of Active/Passive VM-Series firewalls on Google Cloud.   This architecture provides the following benefits:
+This tutorial creates a pair of Active/Passive VM-Series firewalls on Google Cloud.   This architecture provides the following benefits:
 * Configuration sync between the VM-Series firewalls.
 * State synchronization between instances to maintain state on failover.
 
@@ -116,7 +116,7 @@ We can now test the deployment by accessing the `workload-vm` that resides in th
     ![img_1.png](images/img_1.png)
 
 5. Perform a user initiated failover.
-   1. On the **active** firewall, go to the **Device → High Availability → Operational Commands**.
+   1. On the ***active firewall***, go to the **Device → High Availability → Operational Commands**.
    2. Click **Suspend local device for high availability**.
     ![img_2.png](images/img_2.png)
    3. When prompted, click **OK** to initiate the failover.
