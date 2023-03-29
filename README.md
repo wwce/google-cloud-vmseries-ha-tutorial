@@ -109,10 +109,10 @@ We can now test the deployment by accessing the `workload-vm` that resides in th
 
 5. After login, take note of the HA Status in the bottom right corner on each firewall.
 
-    **Active Firewall**
+    <b>Active Firewall</b></br>
     <img src="images/image1.png" width="350">
 
-    **Passive Firewall**
+    <b>Passive Firewall</b></br>
     <img src="images/image2.png" width="350">
 
 6. Perform a user initiated failover.
