@@ -96,15 +96,6 @@ module "vpc_trust" {
       subnet_region = var.region
     }
   ]
-  
-  routes = [
-    {
-      name              = "${local.prefix}default-to-vmseries-intlb"
-      description       = "Default route to VM-Series NGFW LB"
-      destination_range = "0.0.0.0/0"
-      next_hop_ilb      = google_compute_forwarding_rule.intlb.self_link
-    }
-  ]
 
   firewall_rules = [
     {
@@ -154,11 +145,10 @@ module "vpc_ha2" {
   ]
 }
 
-
-resource "google_compute_route" "default" {
-  name        = "network-route"
-  dest_range  = "15.0.0.0/24"
-  network     = google_compute_network.default.name
-  next_hop_ip = "10.132.1.5"
-  priority    = 100
+resource "google_compute_route" "default_to_vmseries" {
+  name         =  "${local.prefix}default-to-vmseries-intlb"
+  dest_range   = "0.0.0.0/0"
+  network      = module.vpc_trust.network_id
+  next_hop_ilb = google_compute_forwarding_rule.intlb.id
+  priority     = 100
 }
