@@ -1,10 +1,12 @@
 # VM-Series Active/Passive HA on Google Cloud
 
-## Overview
-
 This tutorial creates a pair of Active/Passive VM-Series firewalls on Google Cloud.   This architecture provides the following benefits:
 * Configuration sync between the VM-Series firewalls.
 * State synchronization between instances to maintain state on failover.
+
+
+The autoscale architecture is recommended in most use-cases.  Please see [VM-Series on Google Cloud](https://cloud.google.com/architecture/partners/palo-alto-networks-ngfw) for more information on VM-Series deployment models.
+
 
 ## Architecture
 
@@ -13,9 +15,6 @@ This deployment model provides solutions for the following key use-cases:
 * IPSec termination of site-to-site VPNs.
 * Legacy applications that need visibility of the original source client IP (No SNAT solution) for inbound traffic flows.
 * Requirements for session fail-over on failure of VM-Series.
-
-Typically, we recommend a scale-out architecture, review [this link](https://cloud.google.com/architecture/partners/palo-alto-networks-ngfw) for guidance on which architecture is best for you.
-
 
 ![Overview Diagram](images/diagram.png)
 
