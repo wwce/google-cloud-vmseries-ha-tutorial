@@ -70,10 +70,10 @@ When no further changes are necessary in the configuration, deploy the resources
 
     Outputs:
 
-    EXTERNAL_LB_IP     = "x.x.x.x"
-    VMSERIES_ACTIVE    = "https://y.y.y.y"
-    VMSERIES_PASSIVE   = "https://z.z.z.z"
-    SSH_TO_WORKLOAD_VM = "ssh paloalto@x.x.x.x -i ~/.ssh/vmseries-tutorial"
+    EXTERNAL_LB_SSH    = "ssh paloalto@1.1.1.1 -i ~/.ssh/vmseries-tutorial"
+    EXTERNAL_LB_URL    = "https://1.1.1.1"
+    VMSERIES_ACTIVE    = "https://2.2.2.2"
+    VMSERIES_PASSIVE   = "https://3.3.3.3"
     ```
 
     The output displays the MGMT URL for each VM-Series firewall.  The `EXTERNAL_LB_IP` output displays the IP address of the external load balancer’s forwarding rule. 
@@ -83,9 +83,9 @@ When no further changes are necessary in the configuration, deploy the resources
 
 We can now test the deployment by accessing the `workload-vm` that resides in the trust VPC network.  All of the `workload-vm` traffic is routed directly through the VM-Series HA pair. 
 
-1. Use the `SSH_TO_WORKLOAD_VM` output to open an SSH session to the `workload-vm` through the VM-Series firewall.  
+1. Use the `EXTERNAL_LB_SSH` output to open an SSH session through the VM-Series to the `workload-vm`.  
    ```
-   ssh paloalto@x.x.x.x -i ~/.ssh/vmseries-tutorial
+   ssh paloalto@1.1.1.1 -i ~/.ssh/vmseries-tutorial
    ```
 
 2. A script has been preloaded to the workload VM.  Run the script to test the failover mechanism across the VM-Series firewalls.
