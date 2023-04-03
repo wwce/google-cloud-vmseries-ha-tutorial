@@ -78,14 +78,16 @@ When no further changes are necessary in the configuration, deploy the resources
 
 We can now test the deployment by accessing the `workload-vm` that resides in the trust VPC network.  All of the `workload-vm` traffic is routed directly through the VM-Series HA pair. 
 
-1. Verify the deployment is ready. Use the output `EXTERNAL_LB_URL` to access the web service on the `workload-vm` through the VM-Series firewall.
+1. Use the output `EXTERNAL_LB_URL` to access the web service on the `workload-vm` through the VM-Series firewall.
 
-    <img src="images/image0.png" width="600">
+    <img src="images/web.png" width="500">
 
 2. Use the output `EXTERNAL_LB_SSH`  to open an SSH session through the VM-Series to the `workload-vm`.  
+    ```
+    ssh paloalto@1.1.1.1 -i ~/.ssh/vmseries-tutorial
+    ```
 
-
-3. A script has been preloaded to the workload VM.  Run the script to test the failover mechanism across the VM-Series firewalls.
+3. On the workload VM, run a preloaded script to test the failover mechanism across the VM-Series firewalls.
     ```
     /network-check.sh
     ```
@@ -117,7 +119,8 @@ We can now test the deployment by accessing the `workload-vm` that resides in th
    2. Click **Suspend local device for high availability**.
         <img src="images/image3.png" width="630">
    3. When prompted, click **OK** to initiate the failover.</br>
-        <img src="images/image4.png" width="350">
+        <img src="images/image4.png" width="285">
+
 
 7. You should notice your SSH session to the `workload-vm` is still active.  This indicates the session successfully failed over between the VM-Series firewalls.  The script output should also display the same source IP address.
     ```
@@ -129,16 +132,94 @@ We can now test the deployment by accessing the `workload-vm` that resides in th
     Wed Mar 12 16:47:24 UTC 2023 -- Online -- Source IP = x.x.x.x
     ```
 
+## (Optional) Onboard Internet Applications
+You can onboard and secure multiple internet facing applications through the VM-Series firewall.  This is done by mapping forwarding rules on the external load balancer to NAT policies defined on the VM-Series firewall.
+
+1. In Cloud Shell, deploy a virtual machine into a subnet within the trust VPC network.  The virtual machine in this example runs a sample application for you.
+   ```
+    gcloud compute instances create my-app2 \
+        --network-interface subnet="panw-us-central1-trust",no-address \
+        --zone=us-central1-a \
+        --image-project=panw-gcp-team-testing \
+        --image=ubuntu-2004-lts-apache-ac \
+        --machine-type=f1-micro
+   ```
+
+2. Record the `INTERNAL_IP` address of the new virtual machine.
+    ```
+    NAME: my-app2
+    ZONE: us-central1-a
+    MACHINE_TYPE: f1-micro
+    PREEMPTIBLE:
+    INTERNAL_IP: 10.0.2.4
+    EXTERNAL_IP:
+    STATUS: RUNNING
+    ```
+
+3. Create a new forwarding rule on the external TCP load balancer. 
+    ```
+    gcloud compute forwarding-rules create panw-vmseries-extlb-rule2 \
+        --load-balancing-scheme=EXTERNAL \
+        --region=us-central1 \
+        --ip-protocol=L3_DEFAULT \
+        --ports=ALL \
+        --backend-service=panw-vmseries-extlb
+    ```
+
+4.  Retrieve and record the address of the new forwarding rule.
+    ```
+    gcloud compute forwarding-rules describe panw-vmseries-extlb-rule2 \
+        --region=us-central1 \
+        --format='get(IPAddress)'
+    ```
+
+    (output)
+    ```
+    34.172.143.223
+    ```
+
+5. On the active VM-Series, go to **Policies → NAT**.  Click **Add** and enter a name for the rule.
+
+6. Configure the **Original Packet** as follows:
+   1. **Source Zone**: `untrust`
+   2. **Destination Zone**: `untrust`
+   3. **Service**: `service-http`
+   4. **Destination Address**:  Set to the forwarding rule's IP address (i.e. `34.172.143.223`).
+        <img src="images/nat1.png" width="630">
+
+7. In the **Translated Packet** tab, configure the **Destination Address Translation** as follows:
+   1. **Translated Type**: `Static IP`
+   2. **Translated Address**: Set to the `INTERNAL_IP` of the sample application (i.e. `10.0.2.4`). 
+        <img src="images/nat2.png" width="630">
+
+8. Click **OK** and Commit the changes.
+9. Access the sample application using the forwarding rule's address.
+    ```
+    http://34.172.143.223
+    ```
+    <img src="images/image5.png" width="400">
+
+
+
 ## Clean up
 
 To avoid incurring charges to your Google Cloud account for the resources you created in this tutorial, delete all the resources when you no longer need them.
 
-1. Run the following command
+1. (Optional) If you onboarded an additional application, delete the forwarding rule and sample application machine. 
+    ```
+    gcloud compute forwarding-rules delete panw-vmseries-extlb-rule2 \
+        --region=us-central1
+
+    gcloud compute instances delete my-app2 \
+        --zone=us-central1-a
+    ```
+
+2. Run the following command.
     ```
     terraform destroy
     ```
 
-2. At the prompt to perform the actions, enter `yes`. 
+3. At the prompt to perform the actions, enter `yes`. 
    
    After all the resources are deleted, Terraform displays the following message:
 

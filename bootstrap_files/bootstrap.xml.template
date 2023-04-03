@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<config detail-version="10.1.4" urldb="paloaltonetworks" version="10.1.0">
+<config detail-version="10.1.7" urldb="paloaltonetworks" version="10.1.0">
   <mgt-config>
     <users>
       <entry name="admin">
@@ -130,10 +130,10 @@
                   <enable>no</enable>
                 </adjust-tcp-mss>
                 <ip>
-                  <entry name="192.168.254.1/32"/>
+                  <entry name="100.64.0.1/32"/>
                 </ip>
-                <comment>gcp-load-balancer-heathcheck</comment>
-                <interface-management-profile>gcp-load-balancer-health-check</interface-management-profile>
+                <comment>LB health check</comment>
+                <interface-management-profile>allow-health-checks</interface-management-profile>
               </entry>
               <entry name="loopback.1">
                 <adjust-tcp-mss>
@@ -142,6 +142,7 @@
                 <ip>
                   <entry name="${external_lb_ip}/32"/>
                 </ip>
+                <comment>Outbound internet traffic through external LB</comment>
               </entry>
             </units>
           </loopback>
@@ -155,8 +156,15 @@
             </entry>
           </monitor-profile>
           <interface-management-profile>
-            <entry name="gcp-load-balancer-health-check">
+            <entry name="allow-health-checks">
               <http>yes</http>
+              <permitted-ip>
+                <entry name="35.191.0.0/16"/>
+                <entry name="130.211.0.0/22"/>
+                <entry name="209.85.152.0/22"/>
+                <entry name="209.85.204.0/22"/>
+                <entry name="169.254.169.254/32"/>
+              </permitted-ip>
             </entry>
           </interface-management-profile>
         </profiles>
@@ -349,170 +357,18 @@
             <routing-table>
               <ip>
                 <static-route>
-                  <entry name="gcp-load-balancer-health-check-range-1">
+                  <entry name="rfc-a">
+                    <path-monitor>
+                      <enable>no</enable>
+                      <failure-condition>any</failure-condition>
+                      <hold-time>2</hold-time>
+                    </path-monitor>
                     <nexthop>
                       <ip-address>${trust_gateway_ip}</ip-address>
                     </nexthop>
                     <bfd>
                       <profile>None</profile>
                     </bfd>
-                    <path-monitor>
-                      <enable>no</enable>
-                      <failure-condition>any</failure-condition>
-                      <hold-time>2</hold-time>
-                    </path-monitor>
-                    <interface>ethernet1/2</interface>
-                    <metric>10</metric>
-                    <destination>gcp-load-balancer-health-check-range-1</destination>
-                    <route-table>
-                      <unicast/>
-                    </route-table>
-                  </entry>
-                  <entry name="gcp-load-balancer-health-check-range-2">
-                    <nexthop>
-                      <ip-address>${trust_gateway_ip}</ip-address>
-                    </nexthop>
-                    <bfd>
-                      <profile>None</profile>
-                    </bfd>
-                    <path-monitor>
-                      <enable>no</enable>
-                      <failure-condition>any</failure-condition>
-                      <hold-time>2</hold-time>
-                    </path-monitor>
-                    <interface>ethernet1/2</interface>
-                    <metric>10</metric>
-                    <destination>gcp-load-balancer-health-check-range-2</destination>
-                    <route-table>
-                      <unicast/>
-                    </route-table>
-                  </entry>
-                  <entry name="gcp-load-balancer-health-check-range-3">
-                    <nexthop>
-                      <ip-address>${trust_gateway_ip}</ip-address>
-                    </nexthop>
-                    <bfd>
-                      <profile>None</profile>
-                    </bfd>
-                    <path-monitor>
-                      <enable>no</enable>
-                      <failure-condition>any</failure-condition>
-                      <hold-time>2</hold-time>
-                    </path-monitor>
-                    <interface>ethernet1/2</interface>
-                    <metric>10</metric>
-                    <destination>gcp-load-balancer-health-check-range-3</destination>
-                    <route-table>
-                      <unicast/>
-                    </route-table>
-                  </entry>
-                  <entry name="gcp-load-balancer-health-check-range-4">
-                    <nexthop>
-                      <ip-address>${trust_gateway_ip}</ip-address>
-                    </nexthop>
-                    <bfd>
-                      <profile>None</profile>
-                    </bfd>
-                    <path-monitor>
-                      <enable>no</enable>
-                      <failure-condition>any</failure-condition>
-                      <hold-time>2</hold-time>
-                    </path-monitor>
-                    <interface>ethernet1/2</interface>
-                    <metric>10</metric>
-                    <destination>gcp-load-balancer-health-check-range-4</destination>
-                    <route-table>
-                      <unicast/>
-                    </route-table>
-                  </entry>
-                  <entry name="external-gcp-load-balancer-health-check-range-1">
-                    <nexthop>
-                      <ip-address>${untrust_gateway_ip}</ip-address>
-                    </nexthop>
-                    <bfd>
-                      <profile>None</profile>
-                    </bfd>
-                    <path-monitor>
-                      <enable>no</enable>
-                      <failure-condition>any</failure-condition>
-                      <hold-time>2</hold-time>
-                    </path-monitor>
-                    <interface>ethernet1/1</interface>
-                    <metric>10</metric>
-                    <destination>gcp-load-balancer-health-check-range-1</destination>
-                    <route-table>
-                      <unicast/>
-                    </route-table>
-                  </entry>
-                  <entry name="external-gcp-load-balancer-health-check-range-2">
-                    <nexthop>
-                      <ip-address>${untrust_gateway_ip}</ip-address>
-                    </nexthop>
-                    <bfd>
-                      <profile>None</profile>
-                    </bfd>
-                    <path-monitor>
-                      <enable>no</enable>
-                      <failure-condition>any</failure-condition>
-                      <hold-time>2</hold-time>
-                    </path-monitor>
-                    <interface>ethernet1/1</interface>
-                    <metric>10</metric>
-                    <destination>gcp-load-balancer-health-check-range-2</destination>
-                    <route-table>
-                      <unicast/>
-                    </route-table>
-                  </entry>
-                  <entry name="external-gcp-load-balancer-health-check-range-3">
-                    <nexthop>
-                      <ip-address>${untrust_gateway_ip}</ip-address>
-                    </nexthop>
-                    <bfd>
-                      <profile>None</profile>
-                    </bfd>
-                    <path-monitor>
-                      <enable>no</enable>
-                      <failure-condition>any</failure-condition>
-                      <hold-time>2</hold-time>
-                    </path-monitor>
-                    <interface>ethernet1/1</interface>
-                    <metric>10</metric>
-                    <destination>gcp-load-balancer-health-check-range-3</destination>
-                    <route-table>
-                      <unicast/>
-                    </route-table>
-                  </entry>
-                  <entry name="external-gcp-load-balancer-health-check-range-4">
-                    <nexthop>
-                      <ip-address>${untrust_gateway_ip}</ip-address>
-                    </nexthop>
-                    <bfd>
-                      <profile>None</profile>
-                    </bfd>
-                    <path-monitor>
-                      <enable>no</enable>
-                      <failure-condition>any</failure-condition>
-                      <hold-time>2</hold-time>
-                    </path-monitor>
-                    <interface>ethernet1/1</interface>
-                    <metric>10</metric>
-                    <destination>gcp-load-balancer-health-check-range-4</destination>
-                    <route-table>
-                      <unicast/>
-                    </route-table>
-                  </entry>
-                  <entry name="rfc1918-class-c">
-                    <nexthop>
-                      <ip-address>${trust_gateway_ip}</ip-address>
-                    </nexthop>
-                    <bfd>
-                      <profile>None</profile>
-                    </bfd>
-                    <path-monitor>
-                      <enable>no</enable>
-                      <failure-condition>any</failure-condition>
-                      <hold-time>2</hold-time>
-                    </path-monitor>
                     <interface>ethernet1/2</interface>
                     <metric>10</metric>
                     <destination>192.168.0.0/16</destination>
@@ -520,7 +376,7 @@
                       <unicast/>
                     </route-table>
                   </entry>
-                  <entry name="rfc1918-class-a">
+                  <entry name="rfc-b">
                     <path-monitor>
                       <enable>no</enable>
                       <failure-condition>any</failure-condition>
@@ -539,7 +395,7 @@
                       <unicast/>
                     </route-table>
                   </entry>
-                  <entry name="rfc1918-class-b">
+                  <entry name="rfc-c">
                     <path-monitor>
                       <enable>no</enable>
                       <failure-condition>any</failure-condition>
@@ -554,6 +410,158 @@
                     <interface>ethernet1/2</interface>
                     <metric>10</metric>
                     <destination>172.16.0.0/12</destination>
+                    <route-table>
+                      <unicast/>
+                    </route-table>
+                  </entry>
+                  <entry name="probe-trust-1">
+                    <path-monitor>
+                      <enable>no</enable>
+                      <failure-condition>any</failure-condition>
+                      <hold-time>2</hold-time>
+                    </path-monitor>
+                    <nexthop>
+                      <ip-address>${trust_gateway_ip}</ip-address>
+                    </nexthop>
+                    <bfd>
+                      <profile>None</profile>
+                    </bfd>
+                    <interface>ethernet1/2</interface>
+                    <metric>10</metric>
+                    <destination>google-probe-1</destination>
+                    <route-table>
+                      <unicast/>
+                    </route-table>
+                  </entry>
+                  <entry name="probe-trust-2">
+                    <path-monitor>
+                      <enable>no</enable>
+                      <failure-condition>any</failure-condition>
+                      <hold-time>2</hold-time>
+                    </path-monitor>
+                    <nexthop>
+                      <ip-address>${trust_gateway_ip}</ip-address>
+                    </nexthop>
+                    <bfd>
+                      <profile>None</profile>
+                    </bfd>
+                    <interface>ethernet1/2</interface>
+                    <metric>10</metric>
+                    <destination>google-probe-2</destination>
+                    <route-table>
+                      <unicast/>
+                    </route-table>
+                  </entry>
+                  <entry name="probe-trust-3">
+                    <path-monitor>
+                      <enable>no</enable>
+                      <failure-condition>any</failure-condition>
+                      <hold-time>2</hold-time>
+                    </path-monitor>
+                    <nexthop>
+                      <ip-address>${trust_gateway_ip}</ip-address>
+                    </nexthop>
+                    <bfd>
+                      <profile>None</profile>
+                    </bfd>
+                    <interface>ethernet1/2</interface>
+                    <metric>10</metric>
+                    <destination>google-probe-3</destination>
+                    <route-table>
+                      <unicast/>
+                    </route-table>
+                  </entry>
+                  <entry name="probe-trust-4">
+                    <path-monitor>
+                      <enable>no</enable>
+                      <failure-condition>any</failure-condition>
+                      <hold-time>2</hold-time>
+                    </path-monitor>
+                    <nexthop>
+                      <ip-address>${trust_gateway_ip}</ip-address>
+                    </nexthop>
+                    <bfd>
+                      <profile>None</profile>
+                    </bfd>
+                    <interface>ethernet1/2</interface>
+                    <metric>10</metric>
+                    <destination>google-probe-4</destination>
+                    <route-table>
+                      <unicast/>
+                    </route-table>
+                  </entry>
+                  <entry name="probe-untrust-1">
+                    <path-monitor>
+                      <enable>no</enable>
+                      <failure-condition>any</failure-condition>
+                      <hold-time>2</hold-time>
+                    </path-monitor>
+                    <nexthop>
+                      <ip-address>${untrust_gateway_ip}</ip-address>
+                    </nexthop>
+                    <bfd>
+                      <profile>None</profile>
+                    </bfd>
+                    <interface>ethernet1/1</interface>
+                    <metric>10</metric>
+                    <destination>google-probe-1</destination>
+                    <route-table>
+                      <unicast/>
+                    </route-table>
+                  </entry>
+                  <entry name="probe-untrust-2">
+                    <path-monitor>
+                      <enable>no</enable>
+                      <failure-condition>any</failure-condition>
+                      <hold-time>2</hold-time>
+                    </path-monitor>
+                    <nexthop>
+                      <ip-address>${untrust_gateway_ip}</ip-address>
+                    </nexthop>
+                    <bfd>
+                      <profile>None</profile>
+                    </bfd>
+                    <interface>ethernet1/1</interface>
+                    <metric>10</metric>
+                    <destination>google-probe-2</destination>
+                    <route-table>
+                      <unicast/>
+                    </route-table>
+                  </entry>
+                  <entry name="probe-untrust-3">
+                    <path-monitor>
+                      <enable>no</enable>
+                      <failure-condition>any</failure-condition>
+                      <hold-time>2</hold-time>
+                    </path-monitor>
+                    <nexthop>
+                      <ip-address>${untrust_gateway_ip}</ip-address>
+                    </nexthop>
+                    <bfd>
+                      <profile>None</profile>
+                    </bfd>
+                    <interface>ethernet1/1</interface>
+                    <metric>10</metric>
+                    <destination>google-probe-3</destination>
+                    <route-table>
+                      <unicast/>
+                    </route-table>
+                  </entry>
+                  <entry name="probe-untrust-4">
+                    <path-monitor>
+                      <enable>no</enable>
+                      <failure-condition>any</failure-condition>
+                      <hold-time>2</hold-time>
+                    </path-monitor>
+                    <nexthop>
+                      <ip-address>${untrust_gateway_ip}</ip-address>
+                    </nexthop>
+                    <bfd>
+                      <profile>None</profile>
+                    </bfd>
+                    <interface>ethernet1/1</interface>
+                    <metric>10</metric>
+                    <destination>google-probe-4</destination>
                     <route-table>
                       <unicast/>
                     </route-table>
@@ -599,7 +607,7 @@
           <hostname>PA-VM</hostname>
           <dns-setting>
             <servers>
-              <primary>8.8.8.8</primary>
+              <primary>169.254.169.254</primary>
               <secondary>4.2.2.2</secondary>
             </servers>
           </dns-setting>
@@ -610,6 +618,20 @@
           </config>
           <management>
             <hostname-type-in-syslog>FQDN</hostname-type-in-syslog>
+            <initcfg>
+              <public-key>c3NoLXJzYSBBQUFBQjNOemFDMXljMkVBQUFBREFRQUJBQUFCZ1FESUJla252ZHJJQi92WEE1aWJTaGZQQjczWHl4RjkwU09nUHB6Z0l0VVI0cTE2N2F4aUg2UGFHMTNXRmp5elJ2K1F2d3lSZE0yaDBHTnpnZ2ZnMlk1UEsvbVgxZWJMVVVFUXNDcm9TTjBVZ0ZPdVRMQ2wwVlc0YjJObGh0K2p6R05WUXU5eTkvdVlreEk4TnpwSzlNYk1aQ0JqNStOR3FJSTdDTGZvQjJUM1ltT0RhNUtnaVRLMHVIQzVEWlQ1NUtDTjNhcklrWU81NjUzU1pQZmlJNitFVStwRlRySm9EK1Y0d3RYV2prdkRYczFFeThuNVJIUHZQa2kxWFUwb0hRS25FSE1TbnZHVlQ5N2dlaXI1TEc0YXFmTzF1ZzA0YytKbmFtRktLWUthUzF0UXNHeERyMGVZR2pMQndtUFBTMm8vK2xLRE9LTTlXbm5pV25jSjE1NlFKTWlHejdVaXQzSnV1RFdnSkw4WG9VdzNXQVJYWU1lZWdpb2gyR1NiTGNQUE1CT3pkQ0JBdmtVM052Qzh0eUZ5amh4c3RkTE9lNW1tN0hhMXZzSHAwVjZUZFdEM1VVd0tOQnBXMW10SXJ1ZDAzNGEyLzdXUWh0U3JEUzRsU0d3V0phZVJubDdQd0lIOE5GSHUzdEU0L2E1UHZaMXBMaHA0RUd5T1M4UHRpNGs9IG1tY2xpbWFuc0Bjcy0xMDY5NDkwNTU2NjQtZGVmYXVsdA==</public-key>
+              <type>
+                <dhcp-client>
+                  <send-hostname>yes</send-hostname>
+                  <send-client-id>no</send-client-id>
+                  <accept-dhcp-hostname>yes</accept-dhcp-hostname>
+                  <accept-dhcp-domain>no</accept-dhcp-domain>
+                </dhcp-client>
+              </type>
+              <dns-primary>169.254.169.254</dns-primary>
+              <dns-secondary>4.2.2.2</dns-secondary>
+              <op-command-modes>mgmt-interface-swap</op-command-modes>
+            </initcfg>
           </management>
         </setting>
         <high-availability>
@@ -661,7 +683,7 @@
                 </layer3>
               </network>
             </entry>
-            <entry name="healthcheck">
+            <entry name="probes">
               <network>
                 <layer3>
                   <member>loopback.254</member>
@@ -676,7 +698,7 @@
             <default-security-rules>
               <rules>
                 <entry name="intrazone-default" uuid="567fe8b0-01ca-4388-b6fd-5cb3e51f0109">
-                  <action>allow</action>
+                  <action>deny</action>
                   <log-start>no</log-start>
                   <log-end>yes</log-end>
                 </entry>
@@ -689,7 +711,7 @@
             </default-security-rules>
             <nat>
               <rules>
-                <entry name="gcp-load-balancer-health-check-untrust" uuid="2fca6dab-020f-4638-a611-3aaa234f8a5f">
+                <entry name="health-check-extlb" uuid="2fca6dab-020f-4638-a611-3aaa234f8a5f">
                   <to>
                     <member>untrust</member>
                   </to>
@@ -697,17 +719,19 @@
                     <member>untrust</member>
                   </from>
                   <source>
-                    <member>gcp-load-balancer-health-check-range</member>
+                    <member>google-health-checks</member>
                   </source>
                   <destination>
                     <member>any</member>
                   </destination>
                   <service>any</service>
                   <dynamic-destination-translation>
-                    <translated-address>192.168.254.1/32</translated-address>
+                    <translated-address>loopback-probes</translated-address>
                   </dynamic-destination-translation>
+                  <description>External GCP load balancer health checks to VM-Series untrust.</description>
+                  <to-interface>ethernet1/1</to-interface>
                 </entry>
-                <entry name="gcp-load-balancer-health-check-trust" uuid="7a44c635-556d-45ac-92e6-2c0f606ff2bb">
+                <entry name="health-check-intlb" uuid="7a44c635-556d-45ac-92e6-2c0f606ff2bb">
                   <to>
                     <member>trust</member>
                   </to>
@@ -715,17 +739,19 @@
                     <member>trust</member>
                   </from>
                   <source>
-                    <member>gcp-load-balancer-health-check-range</member>
+                    <member>google-health-checks</member>
                   </source>
                   <destination>
                     <member>any</member>
                   </destination>
                   <service>any</service>
                   <dynamic-destination-translation>
-                    <translated-address>192.168.254.1/32</translated-address>
+                    <translated-address>loopback-probes</translated-address>
                   </dynamic-destination-translation>
+                  <description>Internal GCP load balancer health checks to VM-Series trust.</description>
+                  <to-interface>ethernet1/2</to-interface>
                 </entry>
-                <entry name="trust-to-untrust-loopback-ip" uuid="4f8fe023-8c44-455e-aa7f-feeded6735ca">
+                <entry name="outbound" uuid="4f8fe023-8c44-455e-aa7f-feeded6735ca">
                   <source-translation>
                     <dynamic-ip-and-port>
                       <interface-address>
@@ -746,11 +772,9 @@
                     <member>any</member>
                   </destination>
                   <service>any</service>
+                  <description>SNAT for outbound internet traffic.</description>
                 </entry>
-                <entry name="DNAT - Loopback.1 to Workload VM" uuid="4fb6211e-4dea-4551-9cca-610a683ff33a">
-                  <destination-translation>
-                    <translated-address>${workload_vm}</translated-address>
-                  </destination-translation>
+                <entry name="inbound-app1" uuid="84ea5967-03e2-408e-8e91-ba593ab86223">
                   <to>
                     <member>untrust</member>
                   </to>
@@ -764,12 +788,153 @@
                     <member>${external_lb_ip}</member>
                   </destination>
                   <service>any</service>
+                  <description>Internet inbound DNAT to test VM.</description>
+                  <destination-translation>
+                    <translated-address>test-vm</translated-address>
+                  </destination-translation>
                 </entry>
               </rules>
             </nat>
             <security>
               <rules>
-                <entry name="allow-all" uuid="0fd58c85-cc14-4f96-8873-5e5085828b88">
+                <entry name="inbound-web" uuid="575f97bb-a389-4409-ba76-acea4047e06b">
+                  <to>
+                    <member>trust</member>
+                  </to>
+                  <from>
+                    <member>untrust</member>
+                  </from>
+                  <source>
+                    <member>any</member>
+                  </source>
+                  <destination>
+                    <member>any</member>
+                  </destination>
+                  <source-user>
+                    <member>any</member>
+                  </source-user>
+                  <category>
+                    <member>any</member>
+                  </category>
+                  <application>
+                    <member>web-browsing</member>
+                  </application>
+                  <service>
+                    <member>application-default</member>
+                  </service>
+                  <source-hip>
+                    <member>any</member>
+                  </source-hip>
+                  <destination-hip>
+                    <member>any</member>
+                  </destination-hip>
+                  <action>allow</action>
+                </entry>
+                <entry name="inbound-ssh" uuid="432d6e3b-63e1-459e-97c9-76a808421019">
+                  <to>
+                    <member>trust</member>
+                  </to>
+                  <from>
+                    <member>untrust</member>
+                  </from>
+                  <source>
+                    <member>any</member>
+                  </source>
+                  <destination>
+                    <member>any</member>
+                  </destination>
+                  <source-user>
+                    <member>any</member>
+                  </source-user>
+                  <category>
+                    <member>any</member>
+                  </category>
+                  <application>
+                    <member>ssh</member>
+                  </application>
+                  <service>
+                    <member>application-default</member>
+                  </service>
+                  <source-hip>
+                    <member>any</member>
+                  </source-hip>
+                  <destination-hip>
+                    <member>any</member>
+                  </destination-hip>
+                  <action>allow</action>
+                </entry>
+                <entry name="outbound" uuid="eda5f735-eab5-4bfc-a850-5c69f50c1ab2">
+                  <to>
+                    <member>untrust</member>
+                  </to>
+                  <from>
+                    <member>trust</member>
+                  </from>
+                  <source>
+                    <member>any</member>
+                  </source>
+                  <destination>
+                    <member>any</member>
+                  </destination>
+                  <source-user>
+                    <member>any</member>
+                  </source-user>
+                  <category>
+                    <member>any</member>
+                  </category>
+                  <application>
+                    <member>apt-get</member>
+                    <member>dns</member>
+                    <member>google-base</member>
+                    <member>ntp</member>
+                    <member>ssl</member>
+                    <member>web-browsing</member>
+                  </application>
+                  <service>
+                    <member>application-default</member>
+                  </service>
+                  <source-hip>
+                    <member>any</member>
+                  </source-hip>
+                  <destination-hip>
+                    <member>any</member>
+                  </destination-hip>
+                  <action>allow</action>
+                </entry>
+                <entry name="health-probe" uuid="be9205db-fa16-47a8-b654-51c7b8a30a4d">
+                  <to>
+                    <member>any</member>
+                  </to>
+                  <from>
+                    <member>any</member>
+                  </from>
+                  <source>
+                    <member>google-health-checks</member>
+                  </source>
+                  <destination>
+                    <member>any</member>
+                  </destination>
+                  <source-user>
+                    <member>any</member>
+                  </source-user>
+                  <category>
+                    <member>any</member>
+                  </category>
+                  <application>
+                    <member>web-browsing</member>
+                  </application>
+                  <service>
+                    <member>application-default</member>
+                  </service>
+                  <source-hip>
+                    <member>any</member>
+                  </source-hip>
+                  <destination-hip>
+                    <member>any</member>
+                  </destination-hip>
+                  <action>allow</action>
+                </entry>
+                <entry name="all-ping" uuid="a8540d3a-d62c-491f-b1ae-7fbc559765f0">
                   <to>
                     <member>any</member>
                   </to>
@@ -789,7 +954,8 @@
                     <member>any</member>
                   </category>
                   <application>
-                    <member>any</member>
+                    <member>ping</member>
+                    <member>traceroute</member>
                   </application>
                   <service>
                     <member>application-default</member>
@@ -816,33 +982,78 @@
             </network>
           </import>
           <address>
-            <entry name="gcp-load-balancer-health-check-range-1">
-              <ip-netmask>35.191.0.0/16</ip-netmask>
-            </entry>
-            <entry name="gcp-load-balancer-health-check-range-2">
-              <ip-netmask>130.211.0.0/22</ip-netmask>
-            </entry>
-            <entry name="gcp-metadata-service">
+            <entry name="google-metadata-server">
               <ip-netmask>169.254.169.254/32</ip-netmask>
+              <tag>
+                <member>google-ip</member>
+              </tag>
             </entry>
-            <entry name="gcp-load-balancer-health-check-range-3">
+            <entry name="google-probe-1">
+              <ip-netmask>35.191.0.0/16</ip-netmask>
+              <tag>
+                <member>google-ip</member>
+              </tag>
+            </entry>
+            <entry name="google-probe-2">
+              <ip-netmask>130.211.0.0/22</ip-netmask>
+              <tag>
+                <member>google-ip</member>
+              </tag>
+            </entry>
+            <entry name="google-probe-3">
               <ip-netmask>209.85.152.0/22</ip-netmask>
+              <tag>
+                <member>google-ip</member>
+              </tag>
             </entry>
-            <entry name="gcp-load-balancer-health-check-range-4">
+            <entry name="google-probe-4">
               <ip-netmask>209.85.204.0/22</ip-netmask>
+              <tag>
+                <member>google-ip</member>
+              </tag>
+            </entry>
+            <entry name="loopback-probes">
+              <ip-netmask>100.64.0.1</ip-netmask>
+              <description>Loopback for LB health-checks</description>
+              <tag>
+                <member>internal-ip</member>
+              </tag>
+            </entry>
+            <entry name="test-vm">
+              <ip-netmask>${workload_vm}</ip-netmask>
+              <tag>
+                <member>internal-ip</member>
+              </tag>
             </entry>
           </address>
           <address-group>
-            <entry name="gcp-load-balancer-health-check-range">
+            <entry name="google-health-checks">
               <static>
-                <member>gcp-load-balancer-health-check-range-1</member>
-                <member>gcp-load-balancer-health-check-range-2</member>
-                <member>gcp-load-balancer-health-check-range-3</member>
-                <member>gcp-load-balancer-health-check-range-4</member>
-                <member>gcp-metadata-service</member>
+                <member>google-metadata-server</member>
+                <member>google-probe-1</member>
+                <member>google-probe-2</member>
+                <member>google-probe-3</member>
+                <member>google-probe-4</member>
               </static>
+              <tag>
+                <member>google-ip</member>
+              </tag>
             </entry>
           </address-group>
+          <tag>
+            <entry name="untrust">
+              <color>color6</color>
+            </entry>
+            <entry name="trust">
+              <color>color13</color>
+            </entry>
+            <entry name="google-ip">
+              <color>color15</color>
+            </entry>
+            <entry name="internal-ip">
+              <color>color25</color>
+            </entry>
+          </tag>
         </entry>
       </vsys>
     </entry>
